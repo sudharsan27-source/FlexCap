@@ -31,17 +31,36 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 const SignUp = () => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const [signUpInfo, setSignUpInfo] = useState({});
+  const [errorInfo, setErrorInfo] = useState({
+    firstName: {
+      error: false,
+      message: "",
+    },
+    lastName: {
+      error: false,
+      message: "",
+    },
+    email: {
+      error: false,
+      message: "",
+    },
+    password: {
+      error: false,
+      message: "",
+    },
+    confirmpassword: {
+      error: false,
+      message: "",
+    },
+  });
 
   const handleSubmit = (event) => {
     try {
-      debugger;
       event.preventDefault();
       setLoading(true);
       const data = new FormData(event.currentTarget);
@@ -50,21 +69,20 @@ const SignUp = () => {
       let email = data.get("email");
       let password = data.get("password");
       let confirmpassword = data.get("confirmpassword");
-      let isValidted = checkValidation(
+      let isValid = checkValidation(
         firstName,
         lastName,
         email,
         password,
         confirmpassword
       );
-      if (isValidted) {
-        setSignUpInfo((prev) => ({
-          ...prev,
+      if (isValid) {
+        setSignUpInfo({
           firstName: data.get("firstName"),
           lastName: data.get("lastName"),
           email: data.get("email"),
           password: data.get("password"),
-        }));
+        });
       } else {
         setLoading(false);
       }
@@ -86,45 +104,62 @@ const SignUp = () => {
     password,
     confirmpassword
   ) => {
-    if (
-      firstName === undefined ||
-      firstName === null ||
-      firstName.trim().length === 0
-    ) {
-      alert("Enter firstName");
-      return false;
-    } else if (
-      lastName === undefined ||
-      lastName === null ||
-      lastName.trim().length === 0
-    ) {
-      alert("Enter lastName");
-      return false;
-    } else if (
-      email === undefined ||
-      email === null ||
-      email.trim().length === 0
-    ) {
-      alert("Enter email");
-      return false;
-    } else if (
-      password === undefined ||
-      password === null ||
-      password.trim().length === 0
-    ) {
-      alert("Enter password");
-      return false;
-    } else if (
-      confirmpassword === undefined ||
-      confirmpassword === null ||
-      confirmpassword.trim().length === 0
-    ) {
-      alert("Enter confirmpassword");
-      return false;
-    }
+    let valid = true;
+    const errors = {
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+      email: { error: false, message: "" },
+      password: { error: false, message: "" },
+      confirmpassword: { error: false, message: "" },
+    };
 
-    return true;
+    if (!firstName || firstName.trim().length === 0) {
+      errors.firstName = { error: true, message: "Enter first name" };
+      valid = false;
+    }
+    if (!lastName || lastName.trim().length === 0) {
+      errors.lastName = { error: true, message: "Enter last name" };
+      valid = false;
+    }
+    if (!email || email.trim().length === 0) {
+      errors.email = { error: true, message: "Enter email" };
+      valid = false;
+    }
+    if (!password || password.trim().length === 0) {
+      errors.password = { error: true, message: "Enter password" };
+      valid = false;
+    }
+    if (!confirmpassword || confirmpassword.trim().length === 0) {
+      errors.confirmpassword = {
+        error: true,
+        message: "Enter confirm password",
+      };
+      valid = false;
+    }
+    if (password !== confirmpassword) {
+      errors.confirmpassword = {
+        error: true,
+        message: "Password not match",
+      };
+      valid = false;
+    }
+    setErrorInfo(errors);
+    return valid;
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSignUpInfo((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error message for the field being edited
+    if (value.trim().length > 0) {
+      setErrorInfo((prev) => ({
+        ...prev,
+        [name]: { error: false, message: "" },
+      }));
+    }
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -159,6 +194,10 @@ const SignUp = () => {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  error={errorInfo.firstName.error}
+                  helperText={errorInfo.firstName.message}
+                  value={signUpInfo.firstName || ""}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -169,6 +208,10 @@ const SignUp = () => {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  error={errorInfo.lastName.error}
+                  helperText={errorInfo.lastName.message}
+                  value={signUpInfo.lastName || ""}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -179,6 +222,10 @@ const SignUp = () => {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  error={errorInfo.email.error}
+                  helperText={errorInfo.email.message}
+                  value={signUpInfo.email || ""}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -190,6 +237,10 @@ const SignUp = () => {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={errorInfo.password.error}
+                  helperText={errorInfo.password.message}
+                  value={signUpInfo.password || ""}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -201,6 +252,10 @@ const SignUp = () => {
                   type="password"
                   id="confirmpassword"
                   autoComplete="new-password"
+                  error={errorInfo.confirmpassword.error}
+                  helperText={errorInfo.confirmpassword.message}
+                  value={signUpInfo.confirmpassword || ""}
+                  onChange={handleInputChange}
                 />
               </Grid>
             </Grid>
