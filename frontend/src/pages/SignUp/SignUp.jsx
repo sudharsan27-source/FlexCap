@@ -13,6 +13,9 @@ import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import axios from "axios";
+import { getPort } from "../../commonFunctions";
+
 function Copyright(props) {
   return (
     <Typography
@@ -34,6 +37,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 const SignUp = () => {
+  const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [loading, setLoading] = useState(false);
   const [signUpInfo, setSignUpInfo] = useState({});
   const [errorInfo, setErrorInfo] = useState({
@@ -59,7 +63,7 @@ const SignUp = () => {
     },
   });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     try {
       event.preventDefault();
       setLoading(true);
@@ -76,6 +80,7 @@ const SignUp = () => {
         password,
         confirmpassword
       );
+
       if (isValid) {
         setSignUpInfo({
           firstName: data.get("firstName"),
@@ -83,14 +88,29 @@ const SignUp = () => {
           email: data.get("email"),
           password: data.get("password"),
         });
+        let obj = {
+          firstName,
+          lastName,
+          email,
+          password,
+        };
+        debugger;
+        const result = await axios.post(
+          `${path.apiUrl}/insertUserDetails`,
+          obj
+        );
+        if (result.status === 200) {
+          console.log(result.data);
+          setLoading(false);
+        }
       } else {
         setLoading(false);
       }
       // Simulate a network request
-      setTimeout(() => {
-        setLoading(false);
-        // Handle form submission here
-      }, 2000);
+      // setTimeout(() => {
+      //   setLoading(false);
+      //   // Handle form submission here
+      // }, 2000);
     } catch (ex) {
       setLoading(false);
       console.log("Error in handleSubmit function", ex);
