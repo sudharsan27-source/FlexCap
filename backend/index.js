@@ -65,7 +65,7 @@ app.post("/verifyOtp", async (req, res) => {
     }
 
     // Create new user
-    const newUser = new User({firstName, lastName, email, password });
+    const newUser = new User({firstName, lastName, email, password, isAdmin: true});
     await newUser.save();
 
     // Delete the OTP as it is no longer needed
@@ -75,6 +75,25 @@ app.post("/verifyOtp", async (req, res) => {
   } catch (error) {
     console.error("Error in verifyOtp:", error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+      const user = await User.findOne({ email: email });
+
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      if (user.password !== password) {
+          return res.status(401).json({ message: 'Invalid password' });
+      }
+      res.status(200).json( user );
+  } catch (error) {
+      res.status(500).json({ message: 'An error occurred', error });
   }
 });
 
