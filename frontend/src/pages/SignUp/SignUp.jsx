@@ -14,6 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import axios from "axios";
+import OtpModel from "../../component/OtpModel";
 import { getPort } from "../../commonFunctions";
 
 function Copyright(props) {
@@ -39,6 +40,7 @@ const defaultTheme = createTheme();
 const SignUp = () => {
   const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [loading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState({OTPModal: false})
   const [signUpInfo, setSignUpInfo] = useState({});
   const [errorInfo, setErrorInfo] = useState({
     firstName: {
@@ -64,7 +66,6 @@ const SignUp = () => {
   });
 
   const handleSubmit = async (event) => {
-
     debugger
     try {
       event.preventDefault();
@@ -89,6 +90,7 @@ const SignUp = () => {
           lastName: data.get("lastName"),
           email: data.get("email"),
           password: data.get("password"),
+          confirmpassword: data.get("confirmpassword"),
         });
         let obj = {
           firstName,
@@ -104,13 +106,26 @@ const SignUp = () => {
         if (result.status === 200) {
           console.log(result.data);
           setLoading(false);
+          setOpenModal((prev)=>({
+            ...prev,
+            OTPModal: true
+          }))
         }
-      } else {
+      }else {
         setLoading(false);
       }
       
     } catch (ex) {
       setLoading(false);
+      if(ex.response.status === 400){
+        setErrorInfo({
+          ...errorInfo,
+          email: {
+            error: true,
+            message: "Email already exists",
+          }
+        });
+      }
       console.log("Error in handleSubmit function", ex);
     }
   };
@@ -178,7 +193,15 @@ const SignUp = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setOpenModal((prev)=>({
+     ...prev,
+      OTPModal: false
+    }))
+  }
+
   return (
+    <>
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -212,8 +235,8 @@ const SignUp = () => {
                   id="firstName"
                   label="First Name"
                   autoFocus
-                  error={errorInfo.firstName.error}
-                  helperText={errorInfo.firstName.message}
+                  error={errorInfo.firstName.error || false}
+                  helperText={errorInfo.firstName.message || ""}
                   value={signUpInfo.firstName || ""}
                   onChange={handleInputChange}
                 />
@@ -226,8 +249,8 @@ const SignUp = () => {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
-                  error={errorInfo.lastName.error}
-                  helperText={errorInfo.lastName.message}
+                  error={errorInfo.lastName.error || false}
+                  helperText={errorInfo.lastName.message || ""}
                   value={signUpInfo.lastName || ""}
                   onChange={handleInputChange}
                 />
@@ -240,8 +263,8 @@ const SignUp = () => {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  error={errorInfo.email.error}
-                  helperText={errorInfo.email.message}
+                  error={errorInfo.email.error || false}
+                  helperText={errorInfo.email.message || ""}
                   value={signUpInfo.email || ""}
                   onChange={handleInputChange}
                 />
@@ -255,8 +278,8 @@ const SignUp = () => {
                   type="password"
                   id="password"
                   autoComplete="new-password"
-                  error={errorInfo.password.error}
-                  helperText={errorInfo.password.message}
+                  error={errorInfo.password.error || false}
+                  helperText={errorInfo.password.message || ""}
                   value={signUpInfo.password || ""}
                   onChange={handleInputChange}
                 />
@@ -270,8 +293,8 @@ const SignUp = () => {
                   type="password"
                   id="confirmpassword"
                   autoComplete="new-password"
-                  error={errorInfo.confirmpassword.error}
-                  helperText={errorInfo.confirmpassword.message}
+                  error={errorInfo.confirmpassword.error || false}
+                  helperText={errorInfo.confirmpassword.message || ""}
                   value={signUpInfo.confirmpassword || ""}
                   onChange={handleInputChange}
                 />
@@ -298,6 +321,8 @@ const SignUp = () => {
         <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
+    {openModal['OTPModal'] && <OtpModel signUpInfo={signUpInfo} handleCloseModal={handleCloseModal} />}
+    </>
   );
 };
 

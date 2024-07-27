@@ -65,7 +65,7 @@ app.post("/verifyOtp", async (req, res) => {
     }
 
     // Create new user
-    const newUser = new User({ email, password });
+    const newUser = new User({firstName, lastName, email, password });
     await newUser.save();
 
     // Delete the OTP as it is no longer needed
