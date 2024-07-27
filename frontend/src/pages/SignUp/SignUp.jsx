@@ -64,6 +64,8 @@ const SignUp = () => {
   });
 
   const handleSubmit = async (event) => {
+
+    debugger
     try {
       event.preventDefault();
       setLoading(true);
@@ -94,9 +96,9 @@ const SignUp = () => {
           email,
           password,
         };
-        debugger;
+        
         const result = await axios.post(
-          `${path.apiUrl}/insertUserDetails`,
+          `${path.apiUrl}/register`,
           obj
         );
         if (result.status === 200) {
@@ -106,18 +108,14 @@ const SignUp = () => {
       } else {
         setLoading(false);
       }
-      // Simulate a network request
-      // setTimeout(() => {
-      //   setLoading(false);
-      //   // Handle form submission here
-      // }, 2000);
+      
     } catch (ex) {
       setLoading(false);
       console.log("Error in handleSubmit function", ex);
     }
   };
 
-  const checkValidation = (
+  const checkValidation = (   
     firstName,
     lastName,
     email,
