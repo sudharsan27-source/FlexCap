@@ -14,12 +14,14 @@ import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import RecyclingRoundedIcon from "@mui/icons-material/RecyclingRounded";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
 import { getPort } from "../../commonFunctions";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+
 function Copyright(props) {
   return (
     <Typography
@@ -43,6 +45,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
+  const { login } = useContext(AuthContext);
   const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [loading, setLoading] = React.useState(false);
   const [loginInfo, setLoginInfo] = useState({});
@@ -57,7 +60,7 @@ export default function Login() {
     },
   });
   const [alert, setAlert] = React.useState({ type: false, message: "" });
-  const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     try {
       event.preventDefault();
@@ -82,8 +85,9 @@ export default function Login() {
         if (result.status === 200) {
           console.log(result);
           setLoading(false);
-          sessionStorage.setItem("userInfo", JSON.stringify(result.data));
-          // navigate("/dashboard");
+          let authData = result.data;
+          login(authData);
+          navigate("/Dashboard");
         }
       } else {
         setLoading(false);
