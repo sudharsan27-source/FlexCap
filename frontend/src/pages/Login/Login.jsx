@@ -45,7 +45,6 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
   const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [loading, setLoading] = React.useState(false);
   const [loginInfo, setLoginInfo] = useState({});
@@ -59,6 +58,7 @@ export default function Login() {
       message: "",
     },
   });
+  const navigate = useNavigate();
   const [alert, setAlert] = React.useState({ type: false, message: "" });
 
   const handleSubmit = async (event) => {
@@ -86,7 +86,7 @@ export default function Login() {
           console.log(result);
           setLoading(false);
           let authData = result.data;
-          login(authData);
+          login(authData); // To set Login user details in session storage
           navigate("/Dashboard");
         }
       } else {
@@ -107,6 +107,29 @@ export default function Login() {
       }
       console.log("Error in handleSubmit function", ex);
     }
+  };
+
+  const login = (authData) => {
+    let {
+      firstName,
+      lastName,
+      email,
+      password,
+      createdAt,
+      isAdmin = false,
+      _id,
+    } = authData;
+    let userData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      createdAt,
+      isAdmin,
+      _id,
+      isLogin: true,
+    };
+    sessionStorage.setItem("auth", JSON.stringify(userData));
   };
 
   const checkValidation = (email, password) => {

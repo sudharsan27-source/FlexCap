@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -20,14 +21,30 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   debugger;
-  const { auth, setSelectedNav, selectedNav } = useContext(AuthContext);
+  const { setSelectedNav, selectedNav } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const navigate = useNavigate();
+  const [auth, setAuth] = React.useState(null);
+
+  useEffect(() => {
+    getSessionValue();
+    setSelectedNav(sessionStorage.getItem("navbar") || "Dashboard");
+  }, []);
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const navigate = useNavigate();
 
-  const navList = ["Dashboard", "Issues", "Project", "Report"];
+  const navList = ["Dashboard", "Issues", "Project", "Report", "Admin"];
+
+  const getSessionValue = () => {
+    try {
+      let user = JSON.parse(sessionStorage.getItem("auth"));
+      setAuth(user);
+    } catch (Ex) {
+      console.log("Error in get session value", Ex);
+    }
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -37,9 +54,20 @@ const Header = () => {
     setMobileMoreAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    try {
+      // sessionStorage.removeItem("auth");
+      sessionStorage.clear();
+      navigate("/");
+    } catch (ex) {
+      console.log("Error in handleLogout", ex);
+    }
+  };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+    handleLogout();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -67,7 +95,8 @@ const Header = () => {
   const stringAvatar = (name) => {
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        // bgcolor: stringToColor(name),
+        bgcolor: "#333",
         fontSize: "1.2rem",
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
@@ -175,7 +204,7 @@ const Header = () => {
             edge="start"
             sx={{ color: "black", mr: 2 }}
             aria-label="open drawer"
-            onClick={handleMobileMenuOpen}
+            // onClick={handleMobileMenuOpen}
           >
             <MenuIcon />
           </IconButton>
@@ -201,16 +230,19 @@ const Header = () => {
                         display: "inline-block",
                         padding: "0px 10px",
                         fontSize: "1.2rem",
-                        color: "black",
+                        background: selectedNav === item ? "#333333" : "white",
+                        color: selectedNav === item ? "white" : "#333333",
                         cursor: "pointer",
-                        borderBottom:
+                        border:
                           selectedNav === item
                             ? "1px solid rgba(0, 0, 0, 0.12)"
                             : "none",
+                        borderRadius: selectedNav === item ? "8px" : "none",
                       }}
                       onClick={() => {
                         debugger;
                         setSelectedNav(item);
+                        sessionStorage.setItem("navbar", item);
                         navigate(`/${item}`);
                       }}
                     >
