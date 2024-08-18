@@ -40,7 +40,10 @@ const Dashboard = () => {
       <div>
         <h1>Dashboard</h1>
       </div>
-      {infoMessage?.modalOpen && <InfoModal infoMessage={infoMessage} />}
+      {infoMessage?.modalOpen &&
+        !JSON.parse(sessionStorage["auth"])["isUser"] && (
+          <InfoModal infoMessage={infoMessage} />
+        )}
     </>
   );
 };

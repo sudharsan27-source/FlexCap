@@ -30,8 +30,13 @@ const Admin = () => {
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     {
-      field: "name",
-      headerName: "Full Name",
+      field: "firstName",
+      headerName: "First Name",
+      flex: 1,
+    },
+    {
+      field: "lastName",
+      headerName: "Last Name",
       flex: 1,
     },
     {
@@ -132,7 +137,8 @@ const Admin = () => {
       if (response.data) {
         let ResultObj = response.data.map((user, index) => ({
           id: index + 1,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
           team: user.team,
           status: user.status,
@@ -150,7 +156,8 @@ const Admin = () => {
     console.log("Editing row:", row);
     setEditData((prev) => ({
       ...prev,
-      name: row.name,
+      firstName: row.firstName,
+      lastName: row.lastName,
       email: row.email,
       team: row.team,
       status: row.status,

@@ -49,7 +49,8 @@ const NewUser = ({ closeModal, editData }) => {
     useContext(AuthContext);
   const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [userInfo, setUserInfo] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     team: [],
     status: "Active", // Added status field
@@ -62,8 +63,8 @@ const NewUser = ({ closeModal, editData }) => {
         if (editData) {
           setUserInfo((prev) => ({
             ...prev,
-
-            name: editData.name,
+            lastName: editData.lastName,
+            firstName: editData.firstName,
             email: editData.email,
             team: [editData.team],
             status: editData.status,
@@ -117,6 +118,8 @@ const NewUser = ({ closeModal, editData }) => {
       let psotObj = {
         ...userInfo,
         password: "Test@123", //set default password
+        isUser: true,
+
         approvalByID: JSON.parse(sessionStorage["auth"])["email"],
         approvalByName: `${JSON.parse(sessionStorage["auth"])["firstName"]} ${
           JSON.parse(sessionStorage["auth"])["lastName"]
@@ -134,7 +137,8 @@ const NewUser = ({ closeModal, editData }) => {
         showToast(result.data.message, "success");
         setUserInfo((prev) => ({
           ...prev,
-          name: "",
+          firstName: "",
+          lastName: "",
           email: "",
           team: [],
           status: "Active",
@@ -184,10 +188,10 @@ const NewUser = ({ closeModal, editData }) => {
           </Box>
 
           <TextField
-            id="name"
-            label="Name"
-            name="name"
-            placeholder="Name"
+            id="firstName"
+            label="First Name"
+            name="firstName"
+            placeholder="First Name"
             variant="standard"
             style={{
               width: "100%",
@@ -215,7 +219,42 @@ const NewUser = ({ closeModal, editData }) => {
               },
             }}
             onChange={handleInputChange}
-            value={userInfo.name}
+            value={userInfo.firstName || ""}
+            multiline
+          />
+          <TextField
+            id="lastName"
+            label="Last Name"
+            name="lastName"
+            placeholder="Last Name"
+            variant="standard"
+            style={{
+              width: "100%",
+              marginBottom: "1rem",
+            }}
+            InputProps={{
+              sx: {
+                "&:before": {
+                  borderBottomColor: "#333",
+                },
+                "&:after": {
+                  borderBottomColor: "#333",
+                },
+                "&:hover:not(.Mui-disabled):before": {
+                  borderBottomColor: "#333",
+                },
+              },
+            }}
+            InputLabelProps={{
+              sx: {
+                color: "#333",
+                "&.Mui-focused": {
+                  color: "#333",
+                },
+              },
+            }}
+            onChange={handleInputChange}
+            value={userInfo.lastName || ""}
             multiline
           />
 

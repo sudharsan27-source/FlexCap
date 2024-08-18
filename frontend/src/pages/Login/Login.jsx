@@ -83,6 +83,7 @@ export default function Login() {
 
         const result = await axios.post(`${path.apiUrl}/login`, obj);
         if (result.status === 200) {
+          debugger;
           console.log(result);
           setLoading(false);
           let authData = result.data;
@@ -116,8 +117,14 @@ export default function Login() {
       email,
       password,
       createdAt,
-      isAdmin = false,
       _id,
+      isAdmin = false,
+      companyName = "",
+      status = "",
+      isUser = false,
+      team = "",
+      approvalByName = "",
+      approvalByID = "",
     } = authData;
     let userData = {
       firstName,
@@ -128,6 +135,12 @@ export default function Login() {
       isAdmin,
       _id,
       isLogin: true,
+      isUser,
+      companyName,
+      status,
+      team,
+      approvalByName,
+      approvalByID,
     };
     sessionStorage.setItem("auth", JSON.stringify(userData));
   };

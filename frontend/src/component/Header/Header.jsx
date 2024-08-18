@@ -202,6 +202,13 @@ const Header = () => {
     </Menu>
   );
 
+  const filteredNavList = navList.filter((item) => {
+    if (item === "Admin") {
+      return auth?.isAdmin;
+    }
+    return true;
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -232,7 +239,7 @@ const Header = () => {
             <>
               <div>
                 <ul>
-                  {navList.map((item, index) => (
+                  {filteredNavList.map((item, index) => (
                     <Typography
                       variant="h6"
                       noWrap
