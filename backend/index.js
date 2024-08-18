@@ -30,7 +30,14 @@ db.once("open", () => {
 });
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://flexcap.netlify.app', // replace with your frontend URL
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 
 //------------------------Deployment------------------------------- 
