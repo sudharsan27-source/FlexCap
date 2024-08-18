@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { TextField, Button, Box } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CloseIcon from "@mui/icons-material/Close";
+import axios from "axios";
+import { getPort, showToast } from "../commonFunctions";
+import { AuthContext } from "../context/AuthContext";
 
 const style = {
   position: "absolute",
@@ -19,10 +22,13 @@ const style = {
 };
 
 const Company = ({ closeModal }) => {
+  const { ishaveCompany, setIsHaveCompany } = useContext(AuthContext);
+  const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [companyInfo, setCompayInfo] = useState({
     companyName: "",
     CEOName: "",
     teams: [],
+    address: "",
   });
 
   const handleInputChange = (e) => {
@@ -38,11 +44,38 @@ const Company = ({ closeModal }) => {
   };
 
   const handleClose = () => {
+    setCompayInfo({
+      companyName: "",
+      CEOName: "",
+      teams: [],
+      address: "",
+    });
     closeModal((prev) => ({ ...prev, companyModal: false }));
   };
 
-  const handleSend = () => {
-    console.log("Send clicked", companyInfo);
+  const handleSend = async () => {
+    try {
+      let psotObj = {
+        ...companyInfo,
+        registerEmailId: JSON.parse(sessionStorage["auth"])["email"],
+      };
+
+      const result = await axios.post(
+        `${path.apiUrl}/insertCompanyInfo`,
+        psotObj
+      );
+      if (result.status === 200) {
+        await checkCompanyInfo();
+        closeModal((prev) => ({ ...prev, companyModal: false }));
+        // toast.success(result.data.message); // Show success message
+        showToast(result.data.message, "success");
+      } else {
+        closeModal((prev) => ({ ...prev, companyModal: false }));
+        showToast(result.data.message, "error");
+      }
+    } catch (ex) {
+      console.log("Error in handleSend", ex);
+    }
   };
 
   const handleReset = () => {
@@ -55,13 +88,26 @@ const Company = ({ closeModal }) => {
 
   const teams = [
     "Managament",
-    "HR",
+    "Human Resources",
     "Development",
     "Testing",
     "Marketing",
     "Sales",
     "Others",
   ];
+
+  const checkCompanyInfo = async () => {
+    try {
+      const response = await axios.post(`${path.apiUrl}/checkCompanyInfo`, {
+        registerEmailId: JSON.parse(sessionStorage["auth"])["email"],
+      });
+      if (response.data.success) {
+        setIsHaveCompany(true);
+      }
+    } catch (ex) {
+      console.log("Error in checkCompanyInfo", ex);
+    }
+  };
 
   return (
     <div>

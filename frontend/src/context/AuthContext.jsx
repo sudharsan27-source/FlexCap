@@ -4,6 +4,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [selectedNav, setSelectedNav] = useState("Dashboard");
+  const [ishaveCompany, setIsHaveCompany] = useState(false);
 
   // useEffect(() => {
   //   sessionStorage.setItem("selectedNav", selectedNav);
@@ -11,7 +12,9 @@ const AuthProvider = ({ children }) => {
   // }, []);
 
   return (
-    <AuthContext.Provider value={{ selectedNav, setSelectedNav }}>
+    <AuthContext.Provider
+      value={{ selectedNav, setSelectedNav, ishaveCompany, setIsHaveCompany }}
+    >
       {children}
     </AuthContext.Provider>
   );

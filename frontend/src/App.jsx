@@ -7,6 +7,8 @@ import Issuse from "./pages/Issuse/Issue";
 import Admin from "./pages/Admin/Admin";
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 import "./App.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
@@ -20,6 +22,7 @@ const App = () => {
           <Route exact path="/Issues" element={<Issuse />} />
           <Route exact path="/Admin" element={<Admin />} />
         </Routes>
+        <ToastContainer />
       </Router>
     </AuthProvider>
   );

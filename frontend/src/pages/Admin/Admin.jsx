@@ -5,12 +5,20 @@ import Stack from "@mui/material/Stack";
 import AddBusinessOutlinedIcon from "@mui/icons-material/AddBusinessOutlined";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import Company from "../../component/Company";
-
+import { AuthContext } from "../../context/AuthContext";
+import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
+import { getPort } from "../../commonFunctions";
 const Admin = () => {
+  const { ishaveCompany, setIsHaveCompany } = React.useContext(AuthContext);
+  const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [modalOpen, setModalOpen] = React.useState({
     companyModal: false,
     userModal: false,
   });
+  React.useEffect(() => {
+    checkCompanyInfo();
+  }, []);
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     {
@@ -90,6 +98,19 @@ const Admin = () => {
     setModalOpen((prev) => ({ ...prev, companyModal: true }));
   };
 
+  const checkCompanyInfo = async () => {
+    try {
+      const response = await axios.post(`${path.apiUrl}/checkCompanyInfo`, {
+        registerEmailId: JSON.parse(sessionStorage["auth"])["email"],
+      });
+      if (response.data.success) {
+        setIsHaveCompany(true);
+      }
+    } catch (ex) {
+      console.log("Error in checkCompanyInfo", ex);
+    }
+  };
+
   return (
     <>
       <div style={{ width: "100%", marginTop: "20px" }}>
@@ -102,13 +123,15 @@ const Admin = () => {
           >
             Company
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<PersonAddOutlinedIcon />}
-            style={{ background: "#333" }}
-          >
-            Add User
-          </Button>
+          {ishaveCompany && (
+            <Button
+              variant="contained"
+              startIcon={<PersonAddOutlinedIcon />}
+              style={{ background: "#333" }}
+            >
+              Add User
+            </Button>
+          )}
         </Stack>
         <DataGrid
           rows={rows}

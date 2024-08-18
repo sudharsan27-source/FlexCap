@@ -97,6 +97,62 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/insertCompanyInfo', async (req, res) => {
+  try {
+    const { registerEmailId, ...companyInfo } = req.body; // Extract the registerEmailId and the rest of the company info
+    const filter = { registerEmailId }; // Define the filter to find an existing record
+
+    // Check if a company with the same registerEmailId already exists
+    let existingCompany = await db.collection("companyInfo").findOne(filter);
+
+    if (existingCompany) {
+      // If the company already exists, update the record
+      const updateResult = await db.collection("companyInfo").updateOne(filter, { $set: companyInfo });
+
+      if (updateResult.modifiedCount > 0) {
+        res.status(200).send({ success: true, message: "Company information updated successfully." });
+      } else {
+        res.status(500).send({ success: false, message: "Failed to update company information." });
+      }
+    } else {
+      // If the company does not exist, insert a new record
+      let postResult = await db.collection("companyInfo").insertOne(req.body);
+
+      if (postResult.acknowledged) {
+        res.status(200).send({ success: true, message: "Company information saved successfully." });
+      } else {
+        res.status(500).send({ success: false, message: "Failed to save company information." });
+      }
+    }
+  } catch (ex) {
+    console.log("Error in insertCompanyInfo", ex);
+    res.status(500).send({ success: false, message: "An error occurred while saving/updating company information." });
+  }
+});
+
+app.post('/checkCompanyInfo', async (req, res) => {
+  try {
+    const { registerEmailId } = req.body;
+
+    // Check if a company with the given email exists in the database
+    const company = await db.collection("companyInfo").findOne({ registerEmailId });
+
+    if (company) {
+      // If company found, send success response
+      res.send({ success: true, message: "Company found", company });
+    } else {
+      // If company not found, send not found response
+      res.send({ success: false, message: "Company not found" });
+    }
+  } catch (error) {
+    console.error("Error in checkCompanyInfo:", error);
+    res.status(500).send({ success: false, message: "An error occurred while checking company information" });
+  }
+});
+
+
+
+
 app.listen(Port, () => {
   console.log(`FlexCap Server is running on port ${Port}`);
 });

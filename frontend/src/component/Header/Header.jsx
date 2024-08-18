@@ -18,7 +18,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import CircularProgress from "@mui/material/CircularProgress";
 const Header = () => {
   debugger;
   const { setSelectedNav, selectedNav } = useContext(AuthContext);
@@ -67,7 +67,6 @@ const Header = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-    handleLogout();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -123,7 +122,7 @@ const Header = () => {
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       <hr />
-      <MenuItem onClick={handleMenuClose}>Log Out</MenuItem>
+      <MenuItem onClick={handleLogout}>Log Out</MenuItem>
     </Menu>
   );
 
