@@ -18,13 +18,15 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import CircularProgress from "@mui/material/CircularProgress";
+import Skeleton from "@mui/material/Skeleton";
+
 const Header = () => {
-  debugger;
-  const { setSelectedNav, selectedNav } = useContext(AuthContext);
+  const { setSelectedNav, selectedNav, isLoading, setIsLoading } =
+    useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [auth, setAuth] = React.useState(null);
+  // const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     getSessionValue();
@@ -44,6 +46,18 @@ const Header = () => {
     } catch (Ex) {
       console.log("Error in get session value", Ex);
     }
+  };
+
+  const handleNavClick = (item) => {
+    setIsLoading(true);
+    setSelectedNav(item);
+    sessionStorage.setItem("navbar", item);
+    navigate(`/${item}`);
+
+    // Simulate a delay (e.g., API call, navigation delay)
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500); // Adjust the delay as needed
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -203,7 +217,6 @@ const Header = () => {
             edge="start"
             sx={{ color: "black", mr: 2 }}
             aria-label="open drawer"
-            // onClick={handleMobileMenuOpen}
           >
             <MenuIcon />
           </IconButton>
@@ -238,12 +251,7 @@ const Header = () => {
                             : "none",
                         borderRadius: selectedNav === item ? "8px" : "none",
                       }}
-                      onClick={() => {
-                        debugger;
-                        setSelectedNav(item);
-                        sessionStorage.setItem("navbar", item);
-                        navigate(`/${item}`);
-                      }}
+                      onClick={() => handleNavClick(item)}
                     >
                       {item}
                     </Typography>

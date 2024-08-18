@@ -1,8 +1,12 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { AuthContext } from "../../context/AuthContext";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 
+const Issue = () => {
+  const { isLoading } = useContext(AuthContext);
 
-const Issuse = () => {
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "firstName", headerName: "First name", width: 130 },
@@ -19,10 +23,11 @@ const Issuse = () => {
       description: "This column has a value getter and is not sortable.",
       sortable: false,
       width: 160,
-      valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+      valueGetter: (value, row) =>
+        `${row.firstName || ""} ${row.lastName || ""}`,
     },
   ];
-  
+
   const rows = [
     { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
     { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
@@ -34,21 +39,38 @@ const Issuse = () => {
     { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
     { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
   ];
+
   return (
     <div style={{ height: 400, width: "100%", marginTop: "20px" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        // checkboxSelection
-      />
+      {isLoading ? (
+        <Box>
+          {rows.map((_, index) => (
+            <Box
+              key={index}
+              sx={{ display: "flex", gap: 2, mt: 1, width: "100%" }}
+            >
+              <Skeleton variant="rectangular" width={70} height={40} />
+              <Skeleton variant="rectangular" width={130} height={40} />
+              <Skeleton variant="rectangular" width={130} height={40} />
+              <Skeleton variant="rectangular" width={90} height={40} />
+              <Skeleton variant="rectangular" width={160} height={40} />
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+        />
+      )}
     </div>
   );
 };
 
-export default Issuse;
+export default Issue;

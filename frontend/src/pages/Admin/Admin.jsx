@@ -4,98 +4,110 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import AddBusinessOutlinedIcon from "@mui/icons-material/AddBusinessOutlined";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Company from "../../component/Company";
 import { AuthContext } from "../../context/AuthContext";
-import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import { getPort } from "../../commonFunctions";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
+import NewUser from "../../component/NewUser";
+
 const Admin = () => {
-  const { ishaveCompany, setIsHaveCompany } = React.useContext(AuthContext);
+  const { ishaveCompany, setIsHaveCompany, isLoading } =
+    React.useContext(AuthContext);
   const [path, setPath] = React.useState({ apiUrl: getPort() });
   const [modalOpen, setModalOpen] = React.useState({
     companyModal: false,
     userModal: false,
   });
+  const [data, setData] = React.useState([]);
+  const [editData, setEditData] = React.useState(null);
   React.useEffect(() => {
     checkCompanyInfo();
-  }, []);
+  }, [modalOpen]);
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      width: 160,
-      valueGetter: (value, row) =>
-        `${row.firstName || ""} ${row.lastName || ""}`,
+      field: "name",
+      headerName: "Full Name",
+      flex: 1,
     },
     {
       field: "email",
       headerName: "Email",
-      width: 130,
+      flex: 1,
+    },
+    {
+      field: "team",
+      headerName: "Team",
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params) => (
+        <span
+          style={{
+            color: getStatusColor(params.value),
+            fontWeight: "bold",
+          }}
+        >
+          {params.value}
+        </span>
+      ),
+    },
+    {
+      field: "approvalBy",
+      headerName: "Approval By",
+      flex: 1,
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      renderCell: (params) => (
+        <Button
+          // variant="contained"
+          // color="primary"
+          startIcon={<EditOutlinedIcon />}
+          onClick={() => handleEdit(params.row)}
+          variant="outlined"
+          color="secondary"
+          style={{ border: "1px solid #333", color: "#333" }}
+        >
+          Edit
+        </Button>
+      ),
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      firstName: "Jon",
-      lastName: "Snow",
-      email: "jon.snow@example.com",
-    },
-    {
-      id: 2,
-      firstName: "Cersei",
-      lastName: "Lannister",
-      email: "cersei.lannister@example.com",
-    },
-    {
-      id: 3,
-      firstName: "Jaime",
-      lastName: "Lannister",
-      email: "jaime.lannister@example.com",
-    },
-    {
-      id: 4,
-      firstName: "Arya",
-      lastName: "Stark",
-      email: "arya.stark@example.com",
-    },
-    {
-      id: 5,
-      firstName: "Daenerys",
-      lastName: "Targaryen",
-      email: "daenerys.targaryen@example.com",
-    },
-    {
-      id: 6,
-      firstName: "unknown",
-      lastName: "Melisandre",
-      email: "unknown.melisandre@example.com",
-    },
-    {
-      id: 7,
-      firstName: "Ferrara",
-      lastName: "Clifford",
-      email: "ferrara.clifford@example.com",
-    },
-    {
-      id: 8,
-      firstName: "Rossini",
-      lastName: "Frances",
-      email: "rossini.frances@example.com",
-    },
-    {
-      id: 9,
-      firstName: "Harvey",
-      lastName: "Roxie",
-      email: "harvey.roxie@example.com",
-    },
-  ];
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "green";
+      case "Inactive":
+        return "red";
+      case "Pending":
+        return "blue";
+      case "Suspended":
+        return "orange";
+      case "Deleted":
+        return "gray";
+      default:
+        return "black";
+    }
+  };
 
-  const handleCompanyModalOpen = () => {
-    setModalOpen((prev) => ({ ...prev, companyModal: true }));
+  const handleCompanyModalOpen = (action) => {
+    if (action === "userModal") {
+      setEditData(null);
+      setModalOpen((prev) => ({ ...prev, userModal: true }));
+    } else {
+      setModalOpen((prev) => ({ ...prev, companyModal: true }));
+    }
   };
 
   const checkCompanyInfo = async () => {
@@ -105,50 +117,121 @@ const Admin = () => {
       });
       if (response.data.success) {
         setIsHaveCompany(true);
+        await getCompanyUsers();
       }
     } catch (ex) {
       console.log("Error in checkCompanyInfo", ex);
     }
   };
 
+  const getCompanyUsers = async () => {
+    try {
+      const response = await axios.post(`${path.apiUrl}/getCompanyUsers`, {
+        registerEmailId: JSON.parse(sessionStorage["auth"])["email"],
+      });
+      if (response.data) {
+        let ResultObj = response.data.map((user, index) => ({
+          id: index + 1,
+          name: user.name,
+          email: user.email,
+          team: user.team,
+          status: user.status,
+          approvalBy: user.approvalByName,
+        }));
+        setData(ResultObj);
+      }
+    } catch (ex) {
+      console.log("Error in getCompanyUsers", ex);
+    }
+  };
+
+  const handleEdit = (row) => {
+    // Implement your edit logic here
+    console.log("Editing row:", row);
+    setEditData((prev) => ({
+      ...prev,
+      name: row.name,
+      email: row.email,
+      team: row.team,
+      status: row.status,
+    }));
+    setModalOpen((prev) => ({ ...prev, userModal: true }));
+  };
+
   return (
     <>
       <div style={{ width: "100%", marginTop: "20px" }}>
         <Stack direction="row" spacing={2}>
-          <Button
-            variant="outlined"
-            startIcon={<AddBusinessOutlinedIcon />}
-            style={{ border: "1px solid #333", color: "#333" }}
-            onClick={handleCompanyModalOpen}
-          >
-            Company
-          </Button>
-          {ishaveCompany && (
+          {isLoading ? (
+            <Skeleton
+              variant="rectangular"
+              width={100}
+              height={40}
+              sx={{ marginBottom: "1rem", borderRadius: "8px" }}
+            />
+          ) : (
             <Button
-              variant="contained"
-              startIcon={<PersonAddOutlinedIcon />}
-              style={{ background: "#333" }}
+              variant="outlined"
+              startIcon={<AddBusinessOutlinedIcon />}
+              style={{ border: "1px solid #333", color: "#333" }}
+              onClick={() => handleCompanyModalOpen("companyModal")}
             >
-              Add User
+              Company
             </Button>
           )}
+          {isLoading && ishaveCompany ? (
+            <Skeleton
+              variant="rectangular"
+              width={100}
+              height={40}
+              sx={{ marginBottom: "1rem", borderRadius: "8px" }}
+            />
+          ) : (
+            ishaveCompany && (
+              <Button
+                variant="contained"
+                startIcon={<PersonAddOutlinedIcon />}
+                style={{ background: "#333" }}
+                onClick={() => handleCompanyModalOpen("userModal")}
+              >
+                Add User
+              </Button>
+            )
+          )}
         </Stack>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          // checkboxSelection
-          style={{
-            marginTop: "1rem",
-          }}
-        />
+        {isLoading ? (
+          <Box sx={{ marginTop: "1rem" }}>
+            {Array.from(new Array(5)).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                width={"100%"}
+                height={40}
+                sx={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+            ))}
+          </Box>
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+            style={{
+              marginTop: "1rem",
+            }}
+            autoHeight
+          />
+        )}
       </div>
       {modalOpen.companyModal && <Company closeModal={setModalOpen} />}
+      {modalOpen.userModal && (
+        <NewUser closeModal={setModalOpen} editData={editData} />
+      )}
     </>
   );
 };

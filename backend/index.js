@@ -150,6 +150,57 @@ app.post('/checkCompanyInfo', async (req, res) => {
   }
 });
 
+app.post('/insertUserInfo', async (req, res) => {
+  try {
+    const { email, ...userInfo } = req.body; // Extract the registerEmailId and the rest of the company info
+    const filter = { email }; // Define the filter to find an existing record
+
+    // Check if a company with the same registerEmailId already exists
+    let existingUser = await db.collection("userInfo").findOne(filter);
+
+    if (existingUser) {
+      // If the company already exists, update the record
+      const updateResult = await db.collection("userInfo").updateOne(filter, { $set: userInfo });
+
+      if (updateResult.modifiedCount > 0) {
+        res.status(200).send({ success: true, message: "User updated successfully." });
+      } else {
+        res.status(500).send({ success: false, message: "Failed to update user information." });
+      }
+    } else {
+      // If the company does not exist, insert a new record
+      let postResult = await db.collection("userInfo").insertOne(req.body);
+
+      if (postResult.acknowledged) {
+        res.status(200).send({ success: true, message: "User saved successfully." });
+      } else {
+        res.status(500).send({ success: false, message: "Failed to save user information." });
+      }
+    }
+  } catch (ex) {
+    console.log("Error in insertCompanyInfo", ex);
+    res.status(500).send({ success: false, message: "An error occurred while saving/updating company information." });
+  }
+});
+
+app.post('/getCompanyUsers', async (req, res) => {
+  try {
+    const { registerEmailId } = req.body;
+    // Find the company information based on the registerEmailId
+    const company = await db.collection("userInfo").find({ approvalByID: registerEmailId }).toArray();
+    if (company) {
+      // If company found, send success response
+      res.send(company);
+    } else {
+      // If company not found, send not found response
+      res.send({ success: false, message: "Company not found" });
+    }
+  } catch (error) {
+    console.error("Error in getCompanyUsers:", error);
+    res.status(500).send({ success: false, message: "An error occurred while checking company information" });
+  }
+});
+
 
 
 
