@@ -4,11 +4,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build" : "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
+    "build" : "npm install  && npm install  --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "Lokesh",
-  "license": "ISC",
+  "license": "ISC", 
   "description": "",
   "dependencies": {
     "axios": "^1.7.2",
