@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const User = require('./models/User');
 const Otp = require('./models/Otp');
 const sendOtp = require('./utils/sendOtp');
+const sendWelcomeEmail = require('./utils/sendWelcomeMail');
 
 const app = express();
 const Port = process.env.PORT || 3000;
@@ -149,17 +150,18 @@ app.post('/checkCompanyInfo', async (req, res) => {
     res.status(500).send({ success: false, message: "An error occurred while checking company information" });
   }
 });
+ 
 
 app.post('/insertUserInfo', async (req, res) => {
   try {
-    const { email, ...userInfo } = req.body; // Extract the registerEmailId and the rest of the company info
+    const { email, password, ...userInfo } = req.body; // Extract email, password, and the rest of the user info
     const filter = { email }; // Define the filter to find an existing record
 
-    // Check if a company with the same registerEmailId already exists
+    // Check if a user with the same email already exists
     let existingUser = await db.collection("userInfo").findOne(filter);
 
     if (existingUser) {
-      // If the company already exists, update the record
+      // If the user already exists, update the record
       const updateResult = await db.collection("userInfo").updateOne(filter, { $set: userInfo });
 
       if (updateResult.modifiedCount > 0) {
@@ -168,20 +170,23 @@ app.post('/insertUserInfo', async (req, res) => {
         res.status(500).send({ success: false, message: "Failed to update user information." });
       }
     } else {
-      // If the company does not exist, insert a new record
+      // If the user does not exist, insert a new record
       let postResult = await db.collection("userInfo").insertOne(req.body);
 
       if (postResult.acknowledged) {
         res.status(200).send({ success: true, message: "User saved successfully." });
+        // Send welcome email after successful insertion
+        await sendWelcomeEmail(email, password);
       } else {
         res.status(500).send({ success: false, message: "Failed to save user information." });
       }
     }
   } catch (ex) {
-    console.log("Error in insertCompanyInfo", ex);
-    res.status(500).send({ success: false, message: "An error occurred while saving/updating company information." });
+    console.log("Error in insertUserInfo", ex);
+    res.status(500).send({ success: false, message: "An error occurred while saving/updating user information." });
   }
 });
+
 
 app.post('/getCompanyUsers', async (req, res) => {
   try {

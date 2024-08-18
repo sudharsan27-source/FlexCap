@@ -116,6 +116,7 @@ const NewUser = ({ closeModal, editData }) => {
     try {
       let psotObj = {
         ...userInfo,
+        password: "Test@123", //set default password
         approvalByID: JSON.parse(sessionStorage["auth"])["email"],
         approvalByName: `${JSON.parse(sessionStorage["auth"])["firstName"]} ${
           JSON.parse(sessionStorage["auth"])["lastName"]
@@ -124,12 +125,11 @@ const NewUser = ({ closeModal, editData }) => {
       // remove listTeams from the object
       delete psotObj.listTeams;
 
-      console.log("add user", psotObj);
-
       const result = await axios.post(`${path.apiUrl}/insertUserInfo`, psotObj);
       if (result.status === 200) {
         // await checkCompanyInfo();
-        // closeModal((prev) => ({ ...prev, companyModal: false }));
+        editData !== null &&
+          closeModal((prev) => ({ ...prev, userModal: false }));
         // toast.success(result.data.message); // Show success message
         showToast(result.data.message, "success");
         setUserInfo((prev) => ({
@@ -140,7 +140,7 @@ const NewUser = ({ closeModal, editData }) => {
           status: "Active",
         }));
       } else {
-        // closeModal((prev) => ({ ...prev, companyModal: false }));
+        closeModal((prev) => ({ ...prev, userModal: false }));
         showToast(result.data.message, "error");
       }
     } catch (ex) {
