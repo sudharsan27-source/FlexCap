@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
-
+const path = require('path')
 const User = require('./models/User');
 const Otp = require('./models/Otp');
 const sendOtp = require('./utils/sendOtp');
@@ -11,7 +11,6 @@ const sendWelcomeEmail = require('./utils/sendWelcomeMail');
 
 const app = express();
 const Port = process.env.PORT || 3000;
-
 const dbURL = "mongodb+srv://lokeshec23:lokesh@cluster0.m6pct2e.mongodb.net/FlexCap";
 
 mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -25,6 +24,15 @@ db.once("open", () => {
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+//------------------------Deployment------------------------------- 
+const __dirname1 = path.resolve();
+app.use(express.static(path.join(__dirname1, '/frontend/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname1, '/frontend/build', 'index.html'));
+});
+
+//------------------------Deployment------------------------------- 
 
 // Register User and Send OTP
 app.post("/register", async (req, res) => {
