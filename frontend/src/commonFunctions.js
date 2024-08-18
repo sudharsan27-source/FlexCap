@@ -6,7 +6,8 @@ import { toast } from "react-toastify";
   // get the host name
   const hostname = window.location.hostname;
   let portValue = 3000;
-  return `http://${hostname}:${portValue}`;
+  // return `http://${hostname}:${portValue}`;
+  return `https://flexcap.onrender.com`;
 };
 
 const showToast = (message, type) => {

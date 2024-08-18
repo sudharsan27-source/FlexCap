@@ -13,7 +13,15 @@ const app = express();
 const Port = process.env.PORT || 3000;
 const dbURL = "mongodb+srv://lokeshec23:lokesh@cluster0.m6pct2e.mongodb.net/FlexCap";
 
-mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('debug', true);
+mongoose.connect(dbURL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true,
+  tlsInsecure: true // For testing only; not recommended for production
+});
+
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -26,11 +34,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 //------------------------Deployment------------------------------- 
-const __dirname1 = path.resolve();
-app.use(express.static(path.join(__dirname1, '/frontend/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname1, '/frontend/build', 'index.html'));
-});
+// const __dirname1 = path.resolve();
+// app.use(express.static(path.join(__dirname1, '/frontend/build')));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname1, '/frontend/build', 'index.html'));
+// });
 
 //------------------------Deployment------------------------------- 
 
