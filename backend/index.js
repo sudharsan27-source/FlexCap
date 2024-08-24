@@ -9,15 +9,17 @@ const Otp = require('./models/Otp');
 const sendOtp = require('./utils/sendOtp');
 const sendWelcomeEmail = require('./utils/sendWelcomeMail');
 
+require('dotenv').config();
+
 const app = express();
-const Port = process.env.PORT || 3000;
-const dbURL = "mongodb+srv://lokeshec23:lokesh@cluster0.m6pct2e.mongodb.net/FlexCap";
+const Port = process.env.PORT ;
+const dbURL = process.env.DB_URL;
 
 // mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('debug', true);
 mongoose.connect(dbURL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // useNewUrlParser: true,
+  // useUnifiedTopology: true,
   ssl: true,
   tlsInsecure: true // For testing only; not recommended for production
 });
@@ -31,8 +33,8 @@ db.once("open", () => {
 
 // Middleware
 const corsOptions = {
-  origin: 'https://flexcap.netlify.app', // replace with your frontend URL
-  // origin: "http://localhost:5173",
+  // origin: 'https://flexcap.netlify.app', // replace with your frontend URL
+  origin: "http://localhost:5173",
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
 
@@ -42,14 +44,19 @@ app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 
-//------------------------Deployment------------------------------- 
+//------------------------Deployment-------------------------------
 // const __dirname1 = path.resolve();
 // app.use(express.static(path.join(__dirname1, '/frontend/build')));
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname1, '/frontend/build', 'index.html'));
 // });
 
-//------------------------Deployment------------------------------- 
+//------------------------Deployment-------------------------------
+
+
+app.listen(Port, () => {
+  console.log(`FlexCap Server is running on port ${Port}`);
+});
 
 // Register User and Send OTP
 app.post("/register", async (req, res) => {
@@ -82,7 +89,7 @@ app.post("/register", async (req, res) => {
 // Verify OTP and Create User
 app.post("/verifyOtp", async (req, res) => {
   try {
-    const {firstName, lastName,email, otp, password } = req.body;
+    const { firstName, lastName, email, otp, password } = req.body;
 
     // Check if OTP is valid
     const validOtp = await Otp.findOne({ email, otp });
@@ -91,7 +98,7 @@ app.post("/verifyOtp", async (req, res) => {
     }
 
     // Create new user
-    const newUser = new User({firstName, lastName, email, password, isAdmin: true});
+    const newUser = new User({ firstName, lastName, email, password, isAdmin: true });
     await newUser.save();
 
     // Delete the OTP as it is no longer needed
@@ -108,28 +115,28 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-      // Check in the User collection
-      let user = await User.findOne({ email: email });
+    // Check in the User collection
+    let user = await User.findOne({ email: email });
 
-      // If not found in User collection, check in userInfo collection
+    // If not found in User collection, check in userInfo collection
+    if (!user) {
+      user = await db.collection('userInfo').findOne({ email: email });
+
+      // If still not found, return user not found
       if (!user) {
-          user = await db.collection('userInfo').findOne({ email: email });
-
-          // If still not found, return user not found
-          if (!user) {
-              return res.status(404).json({ message: 'User not found' });
-          }
+        return res.status(404).json({ message: 'User not found' });
       }
+    }
 
-      // Check if the password matches
-      if (user.password !== password) {
-          return res.status(401).json({ message: 'Invalid password' });
-      }
+    // Check if the password matches
+    if (user.password !== password) {
+      return res.status(401).json({ message: 'Invalid password' });
+    }
 
-      // If both email and password match, send the user data with status 200
-      res.status(200).json(user);
+    // If both email and password match, send the user data with status 200
+    res.status(200).json(user);
   } catch (error) {
-      res.status(500).json({ message: 'An error occurred', error });
+    res.status(500).json({ message: 'An error occurred', error });
   }
 });
 
@@ -186,7 +193,7 @@ app.post('/checkCompanyInfo', async (req, res) => {
     res.status(500).send({ success: false, message: "An error occurred while checking company information" });
   }
 });
- 
+
 
 app.post('/insertUserInfo', async (req, res) => {
   try {
@@ -245,6 +252,4 @@ app.post('/getCompanyUsers', async (req, res) => {
 
 
 
-app.listen(Port, () => {
-  console.log(`FlexCap Server is running on port ${Port}`);
-});
+
