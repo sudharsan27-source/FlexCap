@@ -19,7 +19,7 @@ import { useContext } from "react";
 import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "@mui/material/Skeleton";
-
+import BugReportRoundedIcon from "@mui/icons-material/BugReportRounded";
 const Header = () => {
   const { setSelectedNav, selectedNav, isLoading, setIsLoading } =
     useContext(AuthContext);
@@ -225,7 +225,7 @@ const Header = () => {
             sx={{ color: "black", mr: 2 }}
             aria-label="open drawer"
           >
-            <MenuIcon />
+            <BugReportRoundedIcon />
           </IconButton>
           <Typography
             variant="h6"

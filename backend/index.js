@@ -143,7 +143,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/insertCompanyInfo', async (req, res) => {
   try {
-    const { registerEmailId, ...companyInfo } = req.body; // Extract the registerEmailId and the rest of the company info
+    const { createdBy, ...companyInfo } = req.body; // Extract the registerEmailId and the rest of the company info
     const filter = { registerEmailId }; // Define the filter to find an existing record
 
     // Check if a company with the same registerEmailId already exists
@@ -246,6 +246,104 @@ app.post('/getCompanyUsers', async (req, res) => {
   } catch (error) {
     console.error("Error in getCompanyUsers:", error);
     res.status(500).send({ success: false, message: "An error occurred while checking company information" });
+  }
+});
+
+
+app.post('/getTeamDetails', async (req, res) => {
+  try {
+    const { registerEmailId } = req.body;
+
+    // Find the company using the registerEmailId
+    const company = await db.collection("companyInfo").findOne({ registerEmailId });
+
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    console.log("company", company);
+
+    // Extract the company name from the companyInfo
+    const { companyName } = company;
+
+    // Initialize the result object
+    const result = {
+      companyName,
+      teamLead: [],
+      teamMember: []
+    };
+
+    // Fetch users associated with the company
+    const users = await db.collection("userInfo").find({ companyName }).toArray();
+
+    // Classify users into teamLead and teamMember
+    users.forEach(user => {
+      if (user.team === 'Team Lead') {
+        result.teamLead.push(`${user.firstName} ${user.lastName}`);
+      } else if (user.team === 'Development') {
+        result.teamMember.push(`${user.firstName} ${user.lastName}`);
+      }
+    });
+
+    // Send the result back to the client
+    console.log("resulr", result)
+    res.json(result);
+
+  } catch (error) {
+    console.error('Error fetching company details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/insertProjectInfo', async (req, res) => {
+  try {
+    // Insert a new record
+    let postResult = await db.collection("projectInfo").insertOne(req.body);
+    
+    if (postResult.acknowledged) {
+      res.status(200).send({ success: true, message: "Project information saved successfully." });
+    } else {
+      res.status(500).send({ success: false, message: "Failed to save project information." });
+    }
+  } catch (ex) {
+    console.log("Error in insertProjectInfo", ex);
+    res.status(500).send({ success: false, message: "An error occurred while saving project information." });
+  }
+});
+
+// API endpoint to find email in teamLead or teamMember arrays
+app.post('/getProjectInfo', async (req, res) => {
+  
+  try {
+    const { email } = req.body;
+    const project = await db.collection('projectInfo').find({
+      $or: [
+        { teamLead: email },
+        { teamMember: email },
+        { createdBy: email }
+      ]
+    }).toArray();
+    
+      if (project) {
+          // If email is found in either array, return the project details
+          return res.status(200).json({
+              success: true,
+              project: project
+          });
+      } else {
+          // If email is not found
+          return res.status(404).json({
+              success: false,
+              message: 'Email not found in any project'
+          });
+      }
+  } catch (error) {
+      // Handle error
+      console.error('Error finding email:', error);
+      return res.status(500).json({
+          success: false,
+          message: 'Server error'
+      });
   }
 });
 
