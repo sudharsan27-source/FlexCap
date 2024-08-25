@@ -2,10 +2,7 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import AddBusinessOutlinedIcon from "@mui/icons-material/AddBusinessOutlined";
-import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import Company from "../../component/Company";
+import "./Project.css";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { getPort } from "../../commonFunctions";
@@ -23,12 +20,12 @@ const Project = () => {
     addProject: false,
   });
   const [projectDetails, setProjectDetails] = React.useState([]);
+
   React.useEffect(() => {
     const getinitData = async () => {
       await getProjectInfo();
     };
     getinitData();
-    console.log('projhect', projectDetails)
   }, []);
 
   const getProjectInfo = async () => {
@@ -45,6 +42,59 @@ const Project = () => {
 
   const handleModalOpen = () => {
     setModalOpen((prev) => ({ ...prev, addProject: true }));
+  };
+
+  const getProjectCard = () => {
+    console.log("prj", projectDetails);
+    return (
+      <>
+        {projectDetails &&
+          projectDetails.map((card) => {
+            return (
+              <div key={card._id} className="card-box">
+                <div className="cardName-Editbutton">
+                  <p className="card-header">{card.projectName}</p>
+                  <button className="editbtn">Edit</button>
+                </div>
+                <hr className="line" />
+                <div>
+                  <div className="flex-dvi">
+                    <strong>Project Key:</strong> <p>{card.projectKey}</p>
+                  </div>
+                  <div className="flex-dvi">
+                    <strong>Project Description:</strong>{" "}
+                    <p>{card.projectDescription}</p>
+                  </div>
+                  <div className="flex-dvi">
+                    <strong>Start Data:</strong> <p>{card.projectStartDate}</p>
+                  </div>
+                  <div className="flex-dvi">
+                    <strong>End Data:</strong> <p>{card.projectEndDate}</p>
+                  </div>
+                </div>
+                <div>
+                  <strong>Team Lead</strong>
+                  <div>
+                    {card.teamLead &&
+                      card.teamLead.map((TL) => {
+                        return <span>{TL}</span>;
+                      })}
+                  </div>
+                </div>
+                <div>
+                  <strong>Team Members</strong>
+                  <div>
+                    {card.teamMember &&
+                      card.teamMember.map((TL) => {
+                        return <span>{TL}</span>;
+                      })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+      </>
+    );
   };
 
   return (
@@ -82,9 +132,7 @@ const Project = () => {
             ))}
           </Box>
         ) : (
-          <div>
-            <h1>Hi</h1>
-          </div>
+          <div className="card-outer-div">{getProjectCard()}</div>
         )}
       </div>
       {modalOpen.addProject && <AddProject closeModal={setModalOpen} />}
