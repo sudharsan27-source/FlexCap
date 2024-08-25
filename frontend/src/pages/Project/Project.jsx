@@ -28,6 +28,7 @@ const Project = () => {
       await getProjectInfo();
     };
     getinitData();
+    console.log('projhect', projectDetails)
   }, []);
 
   const getProjectInfo = async () => {
