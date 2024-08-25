@@ -21,6 +21,7 @@ import { getPort } from "../../commonFunctions";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import "./Login.css";
 
 function Copyright(props) {
   return (
@@ -178,10 +179,11 @@ export default function Login() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
+    <ThemeProvider theme={defaultTheme} className="outside">
+      <Container component="main" maxWidth="xs" className="main-div">
         <CssBaseline />
         <Box
+          className="box"
           sx={{
             marginTop: 2,
             display: "flex",
@@ -193,7 +195,7 @@ export default function Login() {
             <LockOutlinedIcon />
           </Avatar> */}
           <Typography component="h1" variant="h5">
-            Login
+            Welcome Back
           </Typography>
           <Box
             component="form"
@@ -239,12 +241,12 @@ export default function Login() {
               {loading ? <CircularProgress size={24} /> : "Login"}
             </Button>
             <Grid container>
-              <Grid item xs>
+              <Grid item xs style={{ width: "50%" }}>
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid item style={{ width: "50%" }}>
                 <Link component={RouterLink} to="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>

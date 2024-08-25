@@ -161,7 +161,7 @@ app.post('/insertCompanyInfo', async (req, res) => {
     } else {
       // If the company does not exist, insert a new record
       let postResult = await db.collection("companyInfo").insertOne(req.body);
-
+      
       if (postResult.acknowledged) {
         res.status(200).send({ success: true, message: "Company information saved successfully." });
       } else {

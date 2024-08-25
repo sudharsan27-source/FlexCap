@@ -1,0 +1,50 @@
+.main-div{
+    /* width: 100%; */
+    /* max-width: fit-content; */
+    /* height: 90dvh; */
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    /* background: rgb(238,174,202);
+background: -moz-radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+background: -webkit-radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%); */
+/* background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%); */
+/* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#eeaeca",endColorstr="#94bbe9",GradientType=1); */
+
+}
+
+
+/* Base styles */
+.box {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    padding: 10%;
+    border-radius: 8px;
+    display: flex;
+    flex-grow: inherit;
+    flex-wrap: wrap;
+    background: #fff;
+    /* width: 0%; */
+}
+
+/* .box-sign{
+    width: 400px;
+} */
+
+/* Medium screens (tablets) */
+/* @media (max-width: 768px) {
+    .box {
+        padding: 8%;
+        border-radius: 6px;
+    }
+} */
+
+/* Small screens (phones) */
+/* @media (max-width: 480px) {
+    .box {
+        padding: 5%;
+        border-radius: 4px;
+        box-shadow: rgba(100, 100, 111, 0.15) 0px 5px 20px 0px;
+    }
+} */

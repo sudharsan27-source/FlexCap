@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 import "./App.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Project from "./pages/Project/Project";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route exact path="/signup" element={<SignUp />} />
           <Route exact path="/Dashboard" element={<Dashboard />} />
           <Route exact path="/Issues" element={<Issuse />} />
+          <Route exact path="/Project" element={<Project />} />
           <Route exact path="/Admin" element={<Admin />} />
         </Routes>
         <ToastContainer />

@@ -198,9 +198,10 @@ const SignUp = () => {
   return (
     <>
       <ThemeProvider theme={defaultTheme}>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" className="main-div">
           <CssBaseline />
           <Box
+            className="box box-sign"
             sx={{
               marginTop: 2,
               display: "flex",
