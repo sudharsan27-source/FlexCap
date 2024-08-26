@@ -1,41 +1,56 @@
-.card-outer-div{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin: 20px; 
+.card-outer-div {
+  width: 98%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 20px;
 }
 
-.card-box{
-    display: flex;
-    flex-direction: column;
-    border: 1px solid lightgray;
-    border-radius: 8px;
-    padding: 1rem;
-    width:fit-content;
+.card-box {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  padding: 1rem;
+  width: calc(33% - 1rem); /* 3 cards per row with 1rem gap */
 }
 
-.cardName-Editbutton{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
+/* For medium screens, make two cards per row */
+@media (max-width: 768px) {
+  .card-box {
+    width: calc(50% - 1rem); /* 2 cards per row with 1rem gap */
+  }
 }
 
-.editbtn{
-    border: 1px solid #333;
-    padding: 5px 10px;
-    border-radius: 4px;
-}
-.line{
-    margin: 0.8rem;
-    width: 100%;
-}
-.card-header{
-    font-size: 1.5rem;
+/* For small screens, make one card per row */
+@media (max-width: 480px) {
+  .card-box {
+    width: 100%; /* 1 card per row */
+  }
 }
 
-.flex-dvi{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.cardName-Editbutton {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.editbtn {
+  border: 1px solid #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+.line {
+  margin: 0.8rem;
+  width: 100%;
+}
+.card-header {
+  font-size: 1.5rem;
+}
+
+.flex-dvi {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
