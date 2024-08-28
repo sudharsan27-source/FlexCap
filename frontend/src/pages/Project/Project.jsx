@@ -44,6 +44,12 @@ const Project = () => {
     setModalOpen((prev) => ({ ...prev, addProject: true }));
   };
 
+  const handleEdit = (id) => {
+debugger
+projectDetails.find((d)=> d._id === id)
+
+  }
+
   const getProjectCard = () => {
     console.log("prj", projectDetails);
     return (
@@ -53,8 +59,8 @@ const Project = () => {
             return (
               <div key={card._id} className="card-box">
                 <div className="cardName-Editbutton">
-                  <p className="card-header">{card.projectName}</p>
-                  <button className="editbtn">Edit</button>
+                  <strong className="card-header">{card.projectName}</strong>
+                  <button className="editbtn" onClick={()=> handleEdit(card._id)}>Edit</button>
                 </div>
                 <hr className="line" />
                 <div>
